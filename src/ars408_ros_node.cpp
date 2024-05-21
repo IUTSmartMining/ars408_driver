@@ -19,49 +19,50 @@
 #include <string>
 #include <unordered_map>
 
-PeContinentalArs408Node::PeContinentalArs408Node(const rclcpp::NodeOptions & node_options)
-: Node("ars408_node", node_options)
+PeContinentalArs408Node::PeContinentalArs408Node(const rclcpp::NodeOptions& node_options)
+  : Node("ars408_node", node_options)
 {
   GenerateUUIDTable();
+  // tcp_node.publish_data("hello");
   Run();
 }
 
-void PeContinentalArs408Node::CanFrameCallback(const can_msgs::msg::Frame::SharedPtr can_msg)
-{
-  if (!can_msg->data.empty()) {
-    can_data_ = can_msg;
-    ars408_driver_.Parse(can_msg->id, can_msg->data, can_msg->dlc);
-  }
-}
+// void PeContinentalArs408Node::CanFrameCallback(const can_msgs::msg::Frame::SharedPtr can_msg)
+// {
+//   if (!can_msg->data.empty()) {
+//     can_data_ = can_msg;
+//     ars408_driver_.Parse(can_msg->id, can_msg->data, can_msg->dlc);
+//   }
+// }
 
 uint32_t PeContinentalArs408Node::ConvertRadarClassToAwSemanticClass(
-  const ars408::Obj_3_Extended::ObjectClassProperty & in_radar_class)
+  const ars408::Obj_3_Extended::ObjectClassProperty& in_radar_class)
 {
   switch (in_radar_class) {
-    case ars408::Obj_3_Extended::BICYCLE:
-      return 32006;
-      break;
-    case ars408::Obj_3_Extended::CAR:
-      return 32001;
-      break;
-    case ars408::Obj_3_Extended::TRUCK:
-      return 32002;
-      break;
-    case ars408::Obj_3_Extended::MOTORCYCLE:
-      return 32005;
-      break;
-    case ars408::Obj_3_Extended::POINT:
-    case ars408::Obj_3_Extended::RESERVED_01:
-    case ars408::Obj_3_Extended::WIDE:
-    case ars408::Obj_3_Extended::RESERVED_02:
-    default:
-      return 32000;
-      break;
+  case ars408::Obj_3_Extended::BICYCLE:
+    return 32006;
+    break;
+  case ars408::Obj_3_Extended::CAR:
+    return 32001;
+    break;
+  case ars408::Obj_3_Extended::TRUCK:
+    return 32002;
+    break;
+  case ars408::Obj_3_Extended::MOTORCYCLE:
+    return 32005;
+    break;
+  case ars408::Obj_3_Extended::POINT:
+  case ars408::Obj_3_Extended::RESERVED_01:
+  case ars408::Obj_3_Extended::WIDE:
+  case ars408::Obj_3_Extended::RESERVED_02:
+  default:
+    return 32000;
+    break;
   }
 }
 
 radar_msgs::msg::RadarTrack PeContinentalArs408Node::ConvertRadarObjectToRadarTrack(
-  const ars408::RadarObject & in_object)
+  const ars408::RadarObject& in_object)
 {
   radar_msgs::msg::RadarTrack out_object;
   out_object.uuid = UUID_table_[in_object.id];
@@ -86,7 +87,7 @@ radar_msgs::msg::RadarTrack PeContinentalArs408Node::ConvertRadarObjectToRadarTr
 }
 
 radar_msgs::msg::RadarReturn PeContinentalArs408Node::ConvertRadarObjectToRadarReturn(
-  const ars408::RadarObject & in_object)
+  const ars408::RadarObject& in_object)
 {
   radar_msgs::msg::RadarReturn radar_return;
   radar_return.range = std::sqrt(
@@ -100,17 +101,17 @@ radar_msgs::msg::RadarReturn PeContinentalArs408Node::ConvertRadarObjectToRadarR
 }
 
 void PeContinentalArs408Node::RadarDetectedObjectsCallback(
-  const std::unordered_map<uint8_t, ars408::RadarObject> & detected_objects)
+  const std::unordered_map<uint8_t, ars408::RadarObject>& detected_objects)
 {
   radar_msgs::msg::RadarTracks output_objects;
   output_objects.header.frame_id = output_frame_;
-  output_objects.header.stamp = can_data_->header.stamp;
+  // output_objects.header.stamp = can_data_->header.stamp;
 
   radar_msgs::msg::RadarScan output_scan;
   output_scan.header.frame_id = output_frame_;
-  output_scan.header.stamp = can_data_->header.stamp;
+  // output_scan.header.stamp = can_data_->header.stamp;
 
-  for (const auto & object : detected_objects) {
+  for (const auto& object : detected_objects) {
     if (publish_radar_track_) {
       output_objects.tracks.emplace_back(ConvertRadarObjectToRadarTrack(object.second));
     };
@@ -156,9 +157,9 @@ void PeContinentalArs408Node::Run()
     std::bind(&PeContinentalArs408Node::RadarDetectedObjectsCallback, this, std::placeholders::_1),
     sequential_publish_);
 
-  subscription_ = this->create_subscription<can_msgs::msg::Frame>(
-    "~/input/frame", 10,
-    std::bind(&PeContinentalArs408Node::CanFrameCallback, this, std::placeholders::_1));
+  // subscription_ = this->create_subscription<can_msgs::msg::Frame>(
+  //   "~/input/frame", 10,
+  //   std::bind(&PeContinentalArs408Node::CanFrameCallback, this, std::placeholders::_1));
 
   publisher_radar_tracks_ =
     this->create_publisher<radar_msgs::msg::RadarTracks>("~/output/objects", 10);

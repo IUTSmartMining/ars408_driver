@@ -26,7 +26,8 @@ namespace ars408
         tcp_server_.start();
     }
 
-    void TcpServerNode::publish_data(const std::string& data) {
+    void TcpServerNode::publish_data(const std::string& data)
+    {
         auto message = std_msgs::msg::String();
         message.data = data;
         publisher_->publish(message);

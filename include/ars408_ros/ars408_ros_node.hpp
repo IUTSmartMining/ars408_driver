@@ -18,7 +18,8 @@
 #include "ars408_ros/ars408_driver.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-#include "can_msgs/msg/frame.hpp"
+// #include "can_msgs/msg/frame.hpp"
+#include "ars408_ros/ars408_tcp_node.hpp"
 #include "radar_msgs/msg/radar_scan.hpp"
 #include "radar_msgs/msg/radar_tracks.hpp"
 #include "unique_identifier_msgs/msg/uuid.hpp"
@@ -30,12 +31,13 @@
 
 class PeContinentalArs408Node : public rclcpp::Node
 {
-  rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr subscriber_can_raw_;
-  rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr subscription_;
+  // rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr subscriber_can_raw_;
+  // rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr subscription_;
   rclcpp::Publisher<radar_msgs::msg::RadarTracks>::SharedPtr publisher_radar_tracks_;
   rclcpp::Publisher<radar_msgs::msg::RadarScan>::SharedPtr publisher_radar_scan_;
 
-  can_msgs::msg::Frame::ConstSharedPtr can_data_;
+  // can_msgs::msg::Frame::ConstSharedPtr can_data_;
+  ars408::TcpServerNode tcp_node;
 
   std::string output_frame_;
   bool publish_radar_track_;
@@ -50,21 +52,21 @@ class PeContinentalArs408Node : public rclcpp::Node
 
   ars408::Ars408Driver ars408_driver_{};
 
-  void CanFrameCallback(const can_msgs::msg::Frame::SharedPtr can_msg);
+  // void CanFrameCallback(const can_msgs::msg::Frame::SharedPtr can_msg);
   void GenerateUUIDTable();
 
-  radar_msgs::msg::RadarTrack ConvertRadarObjectToRadarTrack(const ars408::RadarObject & in_object);
+  radar_msgs::msg::RadarTrack ConvertRadarObjectToRadarTrack(const ars408::RadarObject& in_object);
   radar_msgs::msg::RadarReturn ConvertRadarObjectToRadarReturn(
-    const ars408::RadarObject & in_object);
+    const ars408::RadarObject& in_object);
 
   static uint32_t ConvertRadarClassToAwSemanticClass(
-    const ars408::Obj_3_Extended::ObjectClassProperty & in_radar_class);
+    const ars408::Obj_3_Extended::ObjectClassProperty& in_radar_class);
   static unique_identifier_msgs::msg::UUID GenerateRandomUUID();
 
 public:
-  explicit PeContinentalArs408Node(const rclcpp::NodeOptions & node_options);
+  explicit PeContinentalArs408Node(const rclcpp::NodeOptions& node_options);
   void RadarDetectedObjectsCallback(
-    const std::unordered_map<uint8_t, ars408::RadarObject> & detected_objects);
+    const std::unordered_map<uint8_t, ars408::RadarObject>& detected_objects);
   void Run();
 };
 
