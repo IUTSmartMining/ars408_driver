@@ -23,7 +23,6 @@ PeContinentalArs408Node::PeContinentalArs408Node(const rclcpp::NodeOptions& node
   : Node("ars408_node", node_options)
 {
   GenerateUUIDTable();
-  // tcp_node.publish_data("hello");
   Run();
 }
 

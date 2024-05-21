@@ -17,7 +17,7 @@
 namespace ars408
 {
     TcpServerNode::TcpServerNode()
-        : Node("ars_tcp_server_node"), tcp_server_(12345)
+        : Node("ars_tcp_server_node"), tcp_server_(50000) // TODO: add to params
     {
         publisher_ = this->create_publisher<std_msgs::msg::String>("tcp_data", 10);
         tcp_server_.set_data_callback([this](const std::string& data) {
