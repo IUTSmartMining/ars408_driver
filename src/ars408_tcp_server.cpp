@@ -20,15 +20,22 @@
 
 namespace ars408
 {
-    TcpServer::TcpServer(int port)
-        : port_(port), server_fd_(-1)
-    {}
+    TcpServer::TcpServer()
+    {
+        server_fd_ = -1;
+    }
 
     TcpServer::~TcpServer()
     {
         if (server_fd_ != -1) {
             close(server_fd_);
         }
+    }
+
+    void TcpServer::set_address(std::string ip, int port)
+    {
+        ip_address_ = ip;
+        port_ = port;
     }
 
     void TcpServer::start()
@@ -38,25 +45,34 @@ namespace ars408
 
         if ((server_fd_ = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
             perror("socket failed");
+            close(server_fd_);
             exit(EXIT_FAILURE);
         }
 
         if (setsockopt(server_fd_, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
             perror("setsockopt");
+            close(server_fd_);
             exit(EXIT_FAILURE);
         }
 
         address.sin_family = AF_INET;
-        address.sin_addr.s_addr = INADDR_ANY;
         address.sin_port = htons(port_);
+
+        if (inet_pton(AF_INET, ip_address_.c_str(), &address.sin_addr) <= 0) {
+            perror("invalid address / address not supported");
+            close(server_fd_);
+            exit(EXIT_FAILURE);
+        }
 
         if (bind(server_fd_, (struct sockaddr*)&address, sizeof(address)) < 0) {
             perror("bind failed");
+            close(server_fd_);
             exit(EXIT_FAILURE);
         }
 
         if (listen(server_fd_, 3) < 0) {
             perror("listen");
+            close(server_fd_);
             exit(EXIT_FAILURE);
         }
 

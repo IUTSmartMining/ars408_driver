@@ -24,8 +24,9 @@ namespace ars408
     class TcpServer
     {
     public:
-        TcpServer(int port);
+        TcpServer();
         ~TcpServer();
+        void set_address(std::string ip, int port);
         void start();
         void set_data_callback(const std::function<void(const std::string&)>& callback);
 
@@ -33,6 +34,7 @@ namespace ars408
         void accept_connections();
         void handle_client(int socket);
 
+        std::string ip_address_;
         int port_;
         int server_fd_;
         std::function<void(const std::string&)> data_callback_;
