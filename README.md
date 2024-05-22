@@ -32,7 +32,7 @@ ros2 launch launch/continental_ars408.launch.xml
 
 ### Interface arguments
 
-Create a TCP Server and bind to this adddress.
+Create a TCP Server and bind to this address.
 
 - `ip_address` Default: 192.168.100.9
 - `port` Default: 50000
