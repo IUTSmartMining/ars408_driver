@@ -33,6 +33,8 @@ namespace ars408
     private:
         void accept_connections();
         void handle_client(int socket);
+        std::string readable_buffer(__uint8_t* buff, size_t len);
+
 
         std::string ip_address_;
         int port_;

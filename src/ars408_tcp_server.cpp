@@ -102,17 +102,32 @@ namespace ars408
 
     void TcpServer::handle_client(int socket)
     {
-        char buffer[1024] = { 0 };
+        __uint8_t buffer[1024] = { 0 };
         while (true) {
             int valread = read(socket, buffer, 1024);
             if (valread <= 0) {
                 break;
             }
+            readable_buffer(buffer, valread);
 
             if (data_callback_) {
-                data_callback_(std::string(buffer, valread));
+                data_callback_(readable_buffer(buffer, valread));
             }
         }
         close(socket);
+    }
+
+    std::string TcpServer::readable_buffer(__uint8_t* buff, size_t len)
+    {
+        std::string str;
+        char byte_[3] = { 0 };
+        for (size_t i = 0; i < len; i++)
+        {
+            sprintf(byte_, "%02X", buff[i]);
+            str += byte_;
+            str += " ";
+        }
+        str.pop_back();
+        return str;
     }
 }
