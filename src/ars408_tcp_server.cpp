@@ -149,11 +149,11 @@ namespace ars408
 
         frame.len = buff[0] & 0x0F;
 
-        for (size_t i = 0; i < frame.len; i++)
+        for (int i = 0; i < std::min((int)frame.len, 8); i++)
         {
             frame.data[i] = buff[i + 5];
         }
-        for (size_t i = frame.len; i < 8; i++)
+        for (int i = std::min((int)frame.len, 8); i < 8; i++)
         {
             frame.data[i] = 0;
         }
@@ -174,7 +174,7 @@ namespace ars408
         can_msg.is_extended = frame.is_extended;
         can_msg.is_error = 0;
         can_msg.dlc = frame.len;
-        for (size_t i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
             can_msg.data[i] = frame.data[i];
         }
