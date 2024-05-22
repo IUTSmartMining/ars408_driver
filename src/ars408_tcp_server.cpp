@@ -17,6 +17,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 namespace ars408
 {
@@ -79,7 +80,8 @@ namespace ars408
         std::thread(&TcpServer::accept_connections, this).detach();
     }
 
-    void TcpServer::set_data_callback(const std::function<void(const std::string&)>& callback)
+    // void TcpServer::set_data_callback(const std::function<void(const std::string&)>& callback)
+    void TcpServer::set_data_callback(const std::function<void(const can_msgs::msg::Frame&)>& callback)
     {
         data_callback_ = callback;
     }
@@ -108,10 +110,14 @@ namespace ars408
             if (valread <= 0) {
                 break;
             }
-            readable_buffer(buffer, valread);
 
             if (data_callback_) {
-                data_callback_(readable_buffer(buffer, valread));
+                // data_callback_(readable_buffer(buffer, valread));
+                canfd_frame frame;
+                can_msgs::msg::Frame can_msg;
+                getCanFdFromBytes(frame, buffer);
+                getCanMsgFromCanFd(can_msg, frame);
+                data_callback_(can_msg);
             }
         }
         close(socket);
@@ -129,5 +135,50 @@ namespace ars408
         }
         str.pop_back();
         return str;
+    }
+
+    void TcpServer::getCanFdFromBytes(canfd_frame& frame, __uint8_t* buff)
+    {
+        frame.can_id =
+            (buff[4]) |
+            (buff[3] << 8) |
+            (buff[2] << 16) |
+            (buff[1] << 24);
+
+        uint8_t info = ((buff[0] & 0xF0) >> 4);
+        frame.is_rtr = (info & 0b0100);
+        frame.is_extended = (info & 0b1000);
+
+        frame.len = buff[0] & 0x0F;
+
+        for (size_t i = 0; i < frame.len; i++)
+        {
+            frame.data[i] = buff[i + 5];
+        }
+        for (size_t i = frame.len; i < 8; i++)
+        {
+            frame.data[i] = 0;
+        }
+    }
+
+    void TcpServer::getCanMsgFromCanFd(can_msgs::msg::Frame& can_msg, canfd_frame& frame)
+    {
+        auto now = std::chrono::system_clock::now();
+        auto duration = now.time_since_epoch();
+        auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
+        auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration - seconds);
+
+        can_msg.header.stamp.sec = seconds.count();
+        can_msg.header.stamp.nanosec = nanoseconds.count();
+
+        can_msg.id = frame.can_id;
+        can_msg.is_rtr = frame.is_rtr;
+        can_msg.is_extended = frame.is_extended;
+        can_msg.is_error = 0;
+        can_msg.dlc = frame.len;
+        for (size_t i = 0; i < 8; i++)
+        {
+            can_msg.data[i] = frame.data[i];
+        }
     }
 }
