@@ -29,6 +29,9 @@ namespace ars408
     private:
         void publish_data(const std::string& data);
 
+        std::string ip_;
+        int port_;
+
         TcpServer tcp_server_;
         rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     };
