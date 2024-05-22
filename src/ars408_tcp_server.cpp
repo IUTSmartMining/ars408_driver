@@ -80,7 +80,6 @@ namespace ars408
         std::thread(&TcpServer::accept_connections, this).detach();
     }
 
-    // void TcpServer::set_data_callback(const std::function<void(const std::string&)>& callback)
     void TcpServer::set_data_callback(const std::function<void(const can_msgs::msg::Frame&)>& callback)
     {
         data_callback_ = callback;
@@ -112,7 +111,6 @@ namespace ars408
             }
 
             if (data_callback_) {
-                // data_callback_(readable_buffer(buffer, valread));
                 canfd_frame frame;
                 can_msgs::msg::Frame can_msg;
                 getCanFdFromBytes(frame, buffer);

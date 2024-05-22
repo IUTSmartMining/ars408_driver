@@ -31,7 +31,6 @@ namespace ars408
         ~TcpServer();
         void set_address(std::string ip, int port);
         void start();
-        // void set_data_callback(const std::function<void(const std::string&)>& callback);
         void set_data_callback(const std::function<void(const can_msgs::msg::Frame&)>& callback);
 
     private:
@@ -44,7 +43,6 @@ namespace ars408
         std::string ip_address_;
         int port_;
         int server_fd_;
-        // std::function<void(const std::string&)> data_callback_;
         std::function<void(const can_msgs::msg::Frame&)> data_callback_;
     };
 }

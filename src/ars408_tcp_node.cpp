@@ -23,11 +23,6 @@ namespace ars408
         port_ = this->declare_parameter<int>("port", 50000);
 
         tcp_server_.set_address(ip_, port_);
-        // publisher_ = this->create_publisher<std_msgs::msg::String>("tcp_data", 10);
-        // publisher_ = this->create_publisher<std_msgs::msg::String>("tcp_data", 10);
-        // tcp_server_.set_data_callback([this](const std::string& data) {
-        //     this->publish_data(data);
-        //     });
         publisher_ = this->create_publisher<can_msgs::msg::Frame>("~/input/frame", 10);
         tcp_server_.set_data_callback([this](const can_msgs::msg::Frame& data) {
             this->publish_data(data);
@@ -35,12 +30,8 @@ namespace ars408
         tcp_server_.start();
     }
 
-    // void TcpServerNode::publish_data(const std::string& data)
     void TcpServerNode::publish_data(const can_msgs::msg::Frame& can_msg)
     {
-        // auto message = std_msgs::msg::String();
-        // message.data = data;
-        // publisher_->publish(message);
         publisher_->publish(can_msg);
     }
 }

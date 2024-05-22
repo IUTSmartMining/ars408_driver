@@ -27,14 +27,12 @@ namespace ars408
         TcpServerNode();
 
     private:
-        // void publish_data(const std::string& data);
         void publish_data(const can_msgs::msg::Frame& can_msg);
 
         std::string ip_;
         int port_;
 
         TcpServer tcp_server_;
-        // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
         rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr publisher_;
     };
 }
