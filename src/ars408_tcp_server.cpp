@@ -111,55 +111,15 @@ namespace ars408
             }
 
             if (data_callback_) {
-                canfd_frame frame;
                 can_msgs::msg::Frame can_msg;
-                getCanFdFromBytes(frame, buffer);
-                getCanMsgFromCanFd(can_msg, frame);
+                get_can_msg_from_bytes(can_msg, buffer);
                 data_callback_(can_msg);
             }
         }
         close(socket);
     }
 
-    std::string TcpServer::readable_buffer(__uint8_t* buff, size_t len)
-    {
-        std::string str;
-        char byte_[3] = { 0 };
-        for (size_t i = 0; i < len; i++)
-        {
-            sprintf(byte_, "%02X", buff[i]);
-            str += byte_;
-            str += " ";
-        }
-        str.pop_back();
-        return str;
-    }
-
-    void TcpServer::getCanFdFromBytes(canfd_frame& frame, __uint8_t* buff)
-    {
-        frame.can_id =
-            (buff[4]) |
-            (buff[3] << 8) |
-            (buff[2] << 16) |
-            (buff[1] << 24);
-
-        uint8_t info = ((buff[0] & 0xF0) >> 4);
-        frame.is_rtr = (info & 0b0100);
-        frame.is_extended = (info & 0b1000);
-
-        frame.len = buff[0] & 0x0F;
-
-        for (int i = 0; i < std::min((int)frame.len, 8); i++)
-        {
-            frame.data[i] = buff[i + 5];
-        }
-        for (int i = std::min((int)frame.len, 8); i < 8; i++)
-        {
-            frame.data[i] = 0;
-        }
-    }
-
-    void TcpServer::getCanMsgFromCanFd(can_msgs::msg::Frame& can_msg, canfd_frame& frame)
+    void TcpServer::get_can_msg_from_bytes(can_msgs::msg::Frame& can_msg, __uint8_t* buff)
     {
         auto now = std::chrono::system_clock::now();
         auto duration = now.time_since_epoch();
@@ -169,14 +129,36 @@ namespace ars408
         can_msg.header.stamp.sec = seconds.count();
         can_msg.header.stamp.nanosec = nanoseconds.count();
 
-        can_msg.id = frame.can_id;
-        can_msg.is_rtr = frame.is_rtr;
-        can_msg.is_extended = frame.is_extended;
-        can_msg.is_error = 0;
-        can_msg.dlc = frame.len;
-        for (int i = 0; i < 8; i++)
-        {
-            can_msg.data[i] = frame.data[i];
+        can_msg.id =
+            (buff[4]) |
+            (buff[3] << 8) |
+            (buff[2] << 16) |
+            (buff[1] << 24);
+
+        uint8_t info = ((buff[0] & 0xF0) >> 4);
+        can_msg.is_rtr = (info & 0b0100);
+        can_msg.is_extended = (info & 0b1000);
+
+        can_msg.dlc = (buff[0] & 0x0F);
+
+        for (int i = 0; i < std::min((int)can_msg.dlc, 8); i++) {
+            can_msg.data[i] = buff[i + 5];
         }
+        for (int i = std::min((int)can_msg.dlc, 8); i < 8; i++) {
+            can_msg.data[i] = 0;
+        }
+    }
+
+    std::string TcpServer::readable_buffer(__uint8_t* buff, size_t len)
+    {
+        std::string str;
+        char byte_[3] = { 0 };
+        for (size_t i = 0; i < len; i++) {
+            sprintf(byte_, "%02X", buff[i]);
+            str += byte_;
+            str += " ";
+        }
+        str.pop_back();
+        return str;
     }
 }

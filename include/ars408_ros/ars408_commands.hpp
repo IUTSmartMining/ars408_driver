@@ -22,15 +22,6 @@
 
 namespace ars408
 {
-  struct canfd_frame
-  {
-    __uint32_t can_id;  /* 32 bit CAN_ID */
-    __uint8_t len;      /* frame payload length in byte */
-    bool is_rtr;        /* identifying bit to identify remote frame and data frame */
-    bool is_extended;   /* identifying bit to identify standard frame and extended frame */
-    __uint8_t data[8];
-  };
-
   class RadarCommand
   {
   public:
