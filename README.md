@@ -1,10 +1,10 @@
 # Continental ARS408 Driver
 
-This is Continental ARS408 Driver for ROS2.
+This is Continental ARS408 driver for ROS2 which reads data from **ethernet interface**.
 
 ## How to use
 
-1. build environment
+1. install dependencies
 
 ```sh
 $ rosdep install --from-paths src --ignore-src -r -y
@@ -16,26 +16,27 @@ $ rosdep install --from-paths src --ignore-src -r -y
 $ colcon build
 ```
 
-3. Enable can port
+3. source package
 
 ```sh
-sudo ip link set can0 up type can bitrate 500000
+source install/setup.bash
 ```
 
-4. setup hardware (only first time)
+4. launch the driver
 
 ```sh
-# Objects detection with all extended properties
-cansend can0 200#F8000000089C0000
-```
-
-5. Launch the driver
-
-```sh
-ros2 launch continental_ars408_socket_can.launch.xml
+ros2 launch launch/continental_ars408.launch.xml
 ```
 
 ## Design
+
+### Interface arguments
+
+Create a TCP Server and bind to this adddress.
+
+- `ip_address` Default: 192.168.100.9
+- `port` Default: 50000
+
 ### Input
 
 - `input/frame`
@@ -49,7 +50,7 @@ ros2 launch continental_ars408_socket_can.launch.xml
 - `output/return`
   - `RadarReturn`: <https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarReturn.msg>
 
-### parameters
+### Parameters
 
 - `publish_radar_track`
   - The bool parameter to publish `output/objects` topic
@@ -65,15 +66,6 @@ ros2 launch continental_ars408_socket_can.launch.xml
   - The assumed x-axis size of output objects [m]. The default parameter is 1.8, which derive from distance resolution measuring of ARS408 for far range.
 - `size_y`
   - The assumed y-axis size of output objects [m]. The default parameter is 1.8, which derive from distance resolution measuring of ARS408 for far range.
-
-### launcher
-
-- continental_ars408.xml
-  - Base launcher
-- continental_ars408_socket_can.xml
-  - The launch file will initiate two nodes:
-    1. socketcan_bridge to read from `can0` and publish the CAN msg in `can_raw`
-    1. Continental ARS408 driver will read the `can_raw`, parse and publish `RadarTrack` or `RadarReturn`
 
 ## Reference
 
