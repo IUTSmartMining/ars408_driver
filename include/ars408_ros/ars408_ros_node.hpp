@@ -18,7 +18,7 @@
 #include "ars408_ros/ars408_driver.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-// #include "can_msgs/msg/frame.hpp"
+#include "can_msgs/msg/frame.hpp"
 #include "ars408_ros/ars408_tcp_node.hpp"
 #include "radar_msgs/msg/radar_scan.hpp"
 #include "radar_msgs/msg/radar_tracks.hpp"
@@ -31,12 +31,12 @@
 
 class PeContinentalArs408Node : public rclcpp::Node
 {
-  // rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr subscriber_can_raw_;
-  // rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr subscription_;
+  rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr subscriber_can_raw_;
+  rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr subscription_;
   rclcpp::Publisher<radar_msgs::msg::RadarTracks>::SharedPtr publisher_radar_tracks_;
   rclcpp::Publisher<radar_msgs::msg::RadarScan>::SharedPtr publisher_radar_scan_;
 
-  // can_msgs::msg::Frame::ConstSharedPtr can_data_;
+  can_msgs::msg::Frame::ConstSharedPtr can_data_;
   ars408::TcpServerNode tcp_node;
 
   std::string output_frame_;
@@ -52,7 +52,7 @@ class PeContinentalArs408Node : public rclcpp::Node
 
   ars408::Ars408Driver ars408_driver_{};
 
-  // void CanFrameCallback(const can_msgs::msg::Frame::SharedPtr can_msg);
+  void CanFrameCallback(const can_msgs::msg::Frame::SharedPtr can_msg);
   void GenerateUUIDTable();
 
   radar_msgs::msg::RadarTrack ConvertRadarObjectToRadarTrack(const ars408::RadarObject& in_object);

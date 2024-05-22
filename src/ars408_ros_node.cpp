@@ -26,13 +26,13 @@ PeContinentalArs408Node::PeContinentalArs408Node(const rclcpp::NodeOptions& node
   Run();
 }
 
-// void PeContinentalArs408Node::CanFrameCallback(const can_msgs::msg::Frame::SharedPtr can_msg)
-// {
-//   if (!can_msg->data.empty()) {
-//     can_data_ = can_msg;
-//     ars408_driver_.Parse(can_msg->id, can_msg->data, can_msg->dlc);
-//   }
-// }
+void PeContinentalArs408Node::CanFrameCallback(const can_msgs::msg::Frame::SharedPtr can_msg)
+{
+  if (!can_msg->data.empty()) {
+    can_data_ = can_msg;
+    ars408_driver_.Parse(can_msg->id, can_msg->data, can_msg->dlc);
+  }
+}
 
 uint32_t PeContinentalArs408Node::ConvertRadarClassToAwSemanticClass(
   const ars408::Obj_3_Extended::ObjectClassProperty& in_radar_class)
@@ -104,11 +104,11 @@ void PeContinentalArs408Node::RadarDetectedObjectsCallback(
 {
   radar_msgs::msg::RadarTracks output_objects;
   output_objects.header.frame_id = output_frame_;
-  // output_objects.header.stamp = can_data_->header.stamp;
+  output_objects.header.stamp = can_data_->header.stamp;
 
   radar_msgs::msg::RadarScan output_scan;
   output_scan.header.frame_id = output_frame_;
-  // output_scan.header.stamp = can_data_->header.stamp;
+  output_scan.header.stamp = can_data_->header.stamp;
 
   for (const auto& object : detected_objects) {
     if (publish_radar_track_) {
@@ -156,9 +156,9 @@ void PeContinentalArs408Node::Run()
     std::bind(&PeContinentalArs408Node::RadarDetectedObjectsCallback, this, std::placeholders::_1),
     sequential_publish_);
 
-  // subscription_ = this->create_subscription<can_msgs::msg::Frame>(
-  //   "~/input/frame", 10,
-  //   std::bind(&PeContinentalArs408Node::CanFrameCallback, this, std::placeholders::_1));
+  subscription_ = this->create_subscription<can_msgs::msg::Frame>(
+    "~/input/frame", 10,
+    std::bind(&PeContinentalArs408Node::CanFrameCallback, this, std::placeholders::_1));
 
   publisher_radar_tracks_ =
     this->create_publisher<radar_msgs::msg::RadarTracks>("~/output/objects", 10);

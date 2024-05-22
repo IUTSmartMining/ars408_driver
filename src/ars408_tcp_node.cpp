@@ -28,7 +28,7 @@ namespace ars408
         // tcp_server_.set_data_callback([this](const std::string& data) {
         //     this->publish_data(data);
         //     });
-        publisher_ = this->create_publisher<can_msgs::msg::Frame>("tcp_data", 10);
+        publisher_ = this->create_publisher<can_msgs::msg::Frame>("~/input/frame", 10);
         tcp_server_.set_data_callback([this](const can_msgs::msg::Frame& data) {
             this->publish_data(data);
             });
