@@ -7,13 +7,13 @@ This is Continental ARS408 driver for ROS2 which reads data from **ethernet inte
 1. install dependencies
 
 ```sh
-$ rosdep install --from-paths src --ignore-src -r -y
+rosdep install --from-paths src --ignore-src -r -y
 ```
 
 2. build
 
 ```sh
-$ colcon build
+colcon build
 ```
 
 3. source package
