@@ -4,7 +4,7 @@
   <arg name="port" default="50000" />
 
   <!-- interface -->
-  <arg name="input/frame" default="/sensing/radar/can_tx" />
+  <arg name="input/frame" default="can_tx" />
   <arg name="output/objects" default="objects_raw" />
   <arg name="output/scan" default="scan" />
   <!-- parameter -->
