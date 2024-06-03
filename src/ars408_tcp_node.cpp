@@ -22,6 +22,8 @@ namespace ars408
         ip_ = this->declare_parameter<std::string>("ip_address", "192.168.100.9");
         port_ = this->declare_parameter<int>("port", 50000);
 
+        std::cout << "tcp node started with address: " << ip_ << ":" << port_ << std::endl;
+
         tcp_server_.set_address(ip_, port_);
         publisher_ = this->create_publisher<can_msgs::msg::Frame>("~/input/frame", 10);
         tcp_server_.set_data_callback([this](const can_msgs::msg::Frame& data) {
