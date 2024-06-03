@@ -145,7 +145,7 @@ void PeContinentalArs408Node::GenerateUUIDTable()
 
 void PeContinentalArs408Node::Run()
 {
-  output_frame_ = this->declare_parameter<std::string>("output_frame", "ars408");
+  output_frame_ = this->declare_parameter<std::string>("output_frame", "ars408/radar");
   publish_radar_track_ = this->declare_parameter<bool>("publish_radar_track", true);
   publish_radar_scan_ = this->declare_parameter<bool>("publish_radar_scan", false);
   sequential_publish_ = this->declare_parameter<bool>("sequential_publish", false);
