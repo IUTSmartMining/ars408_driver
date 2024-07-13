@@ -16,6 +16,7 @@
   <depend>sensor_msgs</depend>
   <depend>unique_identifier_msgs</depend>
   <depend>radar_msgs</depend>
+  <depend>autoware_vehicle_msgs</depend>
 
   <exec_depend>ros2_socketcan</exec_depend>
 
