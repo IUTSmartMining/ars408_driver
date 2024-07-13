@@ -1,31 +1,34 @@
 <launch>
   <!-- socket ethernet param -->
-  <arg name="ip_address" default="192.168.100.9" />
-  <arg name="port" default="50000" />
+  <arg name="ip_address" default="192.168.100.9"/>
+  <arg name="port_send" default="50000"/>
+  <arg name="port_receive" default="50001"/>
 
   <!-- interface -->
-  <arg name="input/frame" default="can_tx" />
-  <arg name="output/objects" default="objects_raw" />
-  <arg name="output/scan" default="scan" />
+  <arg name="input/frame" default="can_tx"/>
+  <arg name="output/objects" default="objects_raw"/>
+  <arg name="output/scan" default="scan"/>
   <!-- parameter -->
-  <arg name="output_frame" default="ars408/radar" />
-  <arg name="publish_radar_track" default="true" />
-  <arg name="publish_radar_scan" default="false" />
-  <arg name="sequential_publish" default="false" />
-  <arg name="size_x" default="1.8" />
-  <arg name="size_y" default="1.8" />
+  <arg name="output_frame" default="ars408/radar"/>
+  <arg name="publish_radar_track" default="true"/>
+  <arg name="publish_radar_scan" default="false"/>
+  <arg name="sequential_publish" default="false"/>
+  <arg name="size_x" default="1.8"/>
+  <arg name="size_y" default="1.8"/>
 
   <node pkg="pe_ars408_ros" exec="pe_ars408_node" name="pe_ars408_node" output="screen">
-    <param name="ip_address" value="$(var ip_address)" />
-    <param name="port" value="$(var port)" />
-    <remap from="~/input/frame" to="$(var input/frame)" />
-    <remap from="~/output/objects" to="$(var output/objects)" />
-    <remap from="~/output/scan" to="$(var output/scan)" />
-    <param name="publish_radar_track" value="$(var publish_radar_track)" />
-    <param name="publish_radar_scan" value="$(var publish_radar_scan)" />
-    <param name="output_frame" value="$(var output_frame)" />
-    <param name="sequential_publish" value="$(var sequential_publish)" />
-    <param name="size_x" value="$(var size_x)" />
-    <param name="size_y" value="$(var size_y)" />
+    <param name="ip_address" value="$(var ip_address)"/>
+    <param name="port_send" value="$(var port_send)"/>
+    <param name="port_receive" value="$(var port_receive)"/>
+    <remap from="~/input/frame" to="$(var input/frame)"/>
+    <remap from="~/input/gps" to="/vehicle/status/velocity_status"/>
+    <remap from="~/output/objects" to="$(var output/objects)"/>
+    <remap from="~/output/scan" to="$(var output/scan)"/>
+    <param name="publish_radar_track" value="$(var publish_radar_track)"/>
+    <param name="publish_radar_scan" value="$(var publish_radar_scan)"/>
+    <param name="output_frame" value="$(var output_frame)"/>
+    <param name="sequential_publish" value="$(var sequential_publish)"/>
+    <param name="size_x" value="$(var size_x)"/>
+    <param name="size_y" value="$(var size_y)"/>
   </node>
 </launch>
