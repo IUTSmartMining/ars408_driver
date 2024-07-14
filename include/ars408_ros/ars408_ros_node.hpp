@@ -19,7 +19,6 @@
 #include "rclcpp/rclcpp.hpp"
 
 #include "can_msgs/msg/frame.hpp"
-#include "ars408_ros/ars408_tcp_node.hpp"
 #include "radar_msgs/msg/radar_scan.hpp"
 #include "radar_msgs/msg/radar_tracks.hpp"
 #include "unique_identifier_msgs/msg/uuid.hpp"
@@ -37,7 +36,6 @@ class PeContinentalArs408Node : public rclcpp::Node
   rclcpp::Publisher<radar_msgs::msg::RadarScan>::SharedPtr publisher_radar_scan_;
 
   can_msgs::msg::Frame::ConstSharedPtr can_data_;
-  ars408::TcpServerNode tcp_node;
 
   std::string output_frame_;
   bool publish_radar_track_;
