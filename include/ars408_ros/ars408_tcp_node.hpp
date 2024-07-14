@@ -19,22 +19,25 @@
 #include <std_msgs/msg/string.hpp>
 #include "ars408_ros/ars408_tcp_server.hpp"
 
-namespace ars408
+class TcpServerNode : public rclcpp::Node
 {
-    class TcpServerNode : public rclcpp::Node
-    {
-    public:
-        TcpServerNode();
+public:
+    explicit TcpServerNode(const rclcpp::NodeOptions& node_options);
 
-    private:
-        void publish_data(const can_msgs::msg::Frame& can_msg);
+private:
+    void publish_data(const can_msgs::msg::Frame& can_msg);
+    void gps_data_callback(const autoware_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg);
+    void receive_data_callback(double& velocity, double& yawRate);
 
-        std::string ip_;
-        int port_;
+    std::string ip_;
+    int port_send_, port_receive_;
 
-        TcpServer tcp_server_;
-        rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr publisher_;
-    };
-}
+    autoware_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg_;
+    bool first_velocity_report_;
+
+    TcpServer tcp_server_send_, tcp_server_receive_;
+    rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr publisher_;
+    rclcpp::Subscription<autoware_vehicle_msgs::msg::VelocityReport>::SharedPtr subscription_;
+};
 
 #endif  // ARS408_ROS__ARS408_TCP_NODE_HPP_

@@ -16,12 +16,16 @@
   <arg name="size_x" default="1.8"/>
   <arg name="size_y" default="1.8"/>
 
-  <node pkg="pe_ars408_ros" exec="pe_ars408_node" name="pe_ars408_node" output="screen">
+  <node pkg="pe_ars408_ros" exec="ars408_tcp_node" name="ars408_tcp_node" output="screen">
     <param name="ip_address" value="$(var ip_address)"/>
     <param name="port_send" value="$(var port_send)"/>
     <param name="port_receive" value="$(var port_receive)"/>
     <remap from="~/input/frame" to="$(var input/frame)"/>
     <remap from="~/input/gps" to="/vehicle/status/velocity_status"/>
+  </node>
+
+  <node pkg="pe_ars408_ros" exec="ars408_node" name="ars408_node" output="screen">
+    <remap from="~/input/frame" to="$(var input/frame)"/>
     <remap from="~/output/objects" to="$(var output/objects)"/>
     <remap from="~/output/scan" to="$(var output/scan)"/>
     <param name="publish_radar_track" value="$(var publish_radar_track)"/>

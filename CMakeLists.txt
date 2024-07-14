@@ -22,6 +22,9 @@ ament_auto_add_library(pe_ars408_parser SHARED
 # ROS node
 ament_auto_add_library(pe_ars408_node_component SHARED
   src/ars408_ros_node.cpp
+)
+
+ament_auto_add_library(pe_ars408_tcp_node_component SHARED
   src/ars408_tcp_server.cpp
   src/ars408_tcp_node.cpp
 )
@@ -32,7 +35,12 @@ target_link_libraries(pe_ars408_node_component
 
 rclcpp_components_register_node(pe_ars408_node_component
   PLUGIN "PeContinentalArs408Node"
-  EXECUTABLE pe_ars408_node
+  EXECUTABLE ars408_node
+)
+
+rclcpp_components_register_node(pe_ars408_tcp_node_component
+  PLUGIN "TcpServerNode"
+  EXECUTABLE ars408_tcp_node
 )
 
 if(BUILD_TESTING)
