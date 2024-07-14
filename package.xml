@@ -19,6 +19,7 @@
   <depend>autoware_vehicle_msgs</depend>
 
   <exec_depend>ros2_socketcan</exec_depend>
+  <exec_depend>gps_network_pkg</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
