@@ -58,7 +58,8 @@ void TcpServerNode::receive_data_callback(double& velocity, double& yawRate)
     if (!first_velocity_report_) {
         velocity = 0;
         yawRate = 0;
-        RCLCPP_WARN(this->get_logger(), "No velocity report received yet. Setting velocity and yawRate to 0.");
+        RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
+                            "No velocity report received yet. Setting velocity and yawRate to 0.");
         return;
     }
 
